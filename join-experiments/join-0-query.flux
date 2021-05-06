@@ -20,5 +20,6 @@ join(method: "inner", on: ["_time", "host"], tables: {t0: a, t1: b})
   _time:  r._time,
   _value: r._value_t0 / r._value_t1,
   _field: "ratio",
+  host: r.host,
   }))
 
