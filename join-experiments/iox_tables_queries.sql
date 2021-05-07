@@ -20,25 +20,22 @@ CREATE TABLE cpu (
 SELECT T1.host, T1.time, T1.value/T1.value as ratio
 FROM 
     (SELECT  host, min(_time) as time, max(_value) as value
-        OVER (PARTITION By (15-minute-expression(_time))  -- I will need to figure out this expression but won't be tricky
     FROM    mem
     WHERE   _field = "used_percent" AND
             _start between 2021-05-06T00:00:00Z and 2021-05-07T00:00:00Z AND
             _stop  between 2021-05-06T00:00:00Z and 2021-05-07T00:00:00Z)
-    GROUP BY host 
+    GROUP BY DATE_TRUNC("15 minutes", _time), host 
     ORDER BY time) AS T1
 JOIN
     (SELECT  host, min(_time) as time, max(_value) as value
-        OVER (PARTITION By (15-minute-expression(_time))  -- I will need to figure out this expression but won't be tricky
     FROM    cpu
     WHERE   _field = "usage_user" AND
             _start between 2021-05-06T00:00:00Z and 2021-05-07T00:00:00Z AND
             _stop  between 2021-05-06T00:00:00Z and 2021-05-07T00:00:00Z)
-    GROUP BY host
+    GROUP BY DATE_TRUNC("15 minutes", _time), host
     ORDER BY time) AS T2
 ON       host, time
 ORDER BY host;
-
 
 ------------------------------
 --- From join-0-query.flux
