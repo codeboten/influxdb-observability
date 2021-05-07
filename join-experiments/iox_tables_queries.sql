@@ -24,7 +24,7 @@ FROM
     WHERE   _field = "used_percent" AND
             _start between 2021-05-06T00:00:00Z and 2021-05-07T00:00:00Z AND
             _stop  between 2021-05-06T00:00:00Z and 2021-05-07T00:00:00Z)
-    GROUP BY DATE_TRUNC("15 minutes", _time), host 
+    GROUP BY TIME_BUCKET("15 minutes", _time), host -- TIME_BUCKET function is not available in DataFusion yet
     ORDER BY time) AS T1
 JOIN
     (SELECT  host, min(_time) as time, max(_value) as value
@@ -32,10 +32,14 @@ JOIN
     WHERE   _field = "usage_user" AND
             _start between 2021-05-06T00:00:00Z and 2021-05-07T00:00:00Z AND
             _stop  between 2021-05-06T00:00:00Z and 2021-05-07T00:00:00Z)
-    GROUP BY DATE_TRUNC("15 minutes", _time), host
+    GROUP BY TIME_BUCKET("15 minutes", _time), host
     ORDER BY time) AS T2
 ON       host, time
 ORDER BY host;
+
+-- TIME_BUCKET doc: https://docs.timescale.com/api/latest/analytics/time_bucket/
+-- If you can figuring a sophiticated math expression that do the job of TIME_BUCKET, please help.
+
 
 ------------------------------
 --- From join-0-query.flux
