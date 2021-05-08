@@ -17,25 +17,21 @@ CREATE TABLE cpu (
     host VARCHAR);
 
 
-SELECT T1.host, T1.time, T1.value/T1.value as ratio
-FROM 
-    (SELECT  host, min(_time) as time, max(_value) as value
+SELECT T1.host, T1.time, T1.value/T2.value as ratio
+FROM
+    -- TIME_BUCKET function is not available in DataFusion yet
+    (SELECT  host, TIME_BUCKET("15 minutes", _time) as time, max(_value) as value
     FROM    mem
     WHERE   _field = "used_percent" AND
-            _start between 2021-05-06T00:00:00Z and 2021-05-07T00:00:00Z AND
-            _stop  between 2021-05-06T00:00:00Z and 2021-05-07T00:00:00Z)
-    GROUP BY TIME_BUCKET("15 minutes", _time), host -- TIME_BUCKET function is not available in DataFusion yet
-    ORDER BY time) AS T1
+            _time BETWEEN 2021-05-06T00:00:00Z AND 2021-05-07T00:00:00Z)
+    GROUP BY host) AS T1
 JOIN
-    (SELECT  host, min(_time) as time, max(_value) as value
+    (SELECT  host, TIME_BUCKET("15 minutes", _time) as time, max(_value) as value
     FROM    cpu
     WHERE   _field = "usage_user" AND
-            _start between 2021-05-06T00:00:00Z and 2021-05-07T00:00:00Z AND
-            _stop  between 2021-05-06T00:00:00Z and 2021-05-07T00:00:00Z)
-    GROUP BY TIME_BUCKET("15 minutes", _time), host
-    ORDER BY time) AS T2
-ON       host, time
-ORDER BY host;
+            _time BETWEEN 2021-05-06T00:00:00Z AND 2021-05-07T00:00:00Z)
+    GROUP BY host) AS T2
+ON host, time;
 
 -- TIME_BUCKET doc: https://docs.timescale.com/api/latest/analytics/time_bucket/
 -- If you can figuring a sophiticated math expression that do the job of TIME_BUCKET, please help.
