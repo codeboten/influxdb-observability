@@ -1,0 +1,6 @@
+#group,false,false,false,false,false,true
+#datatype,string,long,string,string,dateTime:RFC3339,string
+#default,_result,,,,,
+,result,table,address,host,_time,_measurement
+,,4,"10.0.2.1",tortuga,1970-01-01T00:00:00Z,host_address
+,,4,"10.0.2.2",Orient.local,1970-01-01T00:00:01Z,host_address
