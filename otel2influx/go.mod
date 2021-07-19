@@ -8,4 +8,7 @@ require (
 	go.opentelemetry.io/collector/model v0.30.0
 )
 
-replace github.com/influxdata/influxdb-observability/common => ../common
+replace (
+	github.com/influxdata/influxdb-observability/common => ../common
+	go.opentelemetry.io/collector/model => ../../opentelemetry-collector/model
+)

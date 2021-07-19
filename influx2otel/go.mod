@@ -10,4 +10,5 @@ require (
 
 replace (
 	github.com/influxdata/influxdb-observability/common => ../common
+	go.opentelemetry.io/collector/model => ../../opentelemetry-collector/model
 )
